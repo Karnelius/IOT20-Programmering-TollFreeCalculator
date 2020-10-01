@@ -12,7 +12,6 @@ import java.util.Scanner;
 public class TollFeeCalculator {
 
     public TollFeeCalculator(String inputFile) {
-        //// Skapar den högre upp för att få tillgång till dates?
         LocalDateTime[] dates = new LocalDateTime[0];
         try {
             Scanner sc = new Scanner(new File(inputFile));
