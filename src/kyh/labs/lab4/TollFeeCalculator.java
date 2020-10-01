@@ -24,9 +24,10 @@ public class TollFeeCalculator {
             System.out.println("The total fee for the inputfile is: " + getTotalFeeCost(dates));
         } catch(DateTimeParseException e) {
             //ToDo #Bug# (catch , throw fångade inte upp)
-            System.err.println("Could not read file " + dates);
+            System.err.println("Could not parse the dates in the file " + dates);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            System.err.println("Could not read the file " + inputFile);
+
         }finally
         //ToDo (1)
         {
