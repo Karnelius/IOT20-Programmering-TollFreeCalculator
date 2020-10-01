@@ -28,7 +28,9 @@ public class TollFeeCalculator {
             System.err.println("Could not read file " + dates);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-
+        }finally
+        //ToDo (1)
+        {
         }
     }
 
@@ -37,7 +39,7 @@ public class TollFeeCalculator {
         LocalDateTime intervalStart = dates[0];
         int maxFeesUnder60min = 0;
         for(LocalDateTime date: dates) {
-            if(date == null) continue;          //why date=null?
+            if(date == null) continue;          //ToDo (2)
             long diffInMinutes = intervalStart.until(date, ChronoUnit.MINUTES);
             int fee = 0;
             if(diffInMinutes > 60) {
@@ -52,7 +54,7 @@ public class TollFeeCalculator {
             System.out.println(date.toString() +" \n" + "Fee: " + getTollFeePerPassing(date));
         }
         //#Bug# (Math.min från Math.max.)
-        return Math.min(totalFee, 60);
+        return Math.min(totalFee + maxFeesUnder60min, 60);
     }
 
     //#"Bug"# (Förenklat koderna, då minute är falskt om ovan är sant...boolean)
