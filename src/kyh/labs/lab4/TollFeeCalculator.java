@@ -1,25 +1,33 @@
 package kyh.labs.lab4;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Scanner;
 
 public class TollFeeCalculator {
 
     public TollFeeCalculator(String inputFile) {
+        //// Skapar den högre upp för att få tillgång till dates?
+        LocalDateTime[] dates = new LocalDateTime[0];
         try {
             Scanner sc = new Scanner(new File(inputFile));
             String[] dateStrings = sc.nextLine().split(", ");
-            LocalDateTime[] dates = new LocalDateTime[dateStrings.length-1];
+            //#Bug# (length ej -1)
+            dates = new LocalDateTime[dateStrings.length];
             for(int i = 0; i < dates.length; i++) {
                 dates[i] = LocalDateTime.parse(dateStrings[i], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
             }
-            System.out.println("The total fee for the inputfile is" + getTotalFeeCost(dates));
-        } catch(IOException e) {
-            System.err.println("Could not read file " + inputFile);
+            System.out.println("The total fee for the inputfile is: " + getTotalFeeCost(dates));
+        } catch(DateTimeParseException e) {
+            //#Bug# (catch , throw fångade inte upp)
+            System.err.println("Could not read file " + dates);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -35,15 +43,18 @@ public class TollFeeCalculator {
             } else {
                 totalFee += Math.max(getTollFeePerPassing(date), getTollFeePerPassing(intervalStart));
             }
+            System.out.println("Fee: " + getTollFeePerPassing(date));
         }
-        return Math.max(totalFee, 60);
+        //#Bug# (Math.min från Math.max.)
+        return Math.min(totalFee, 60);
     }
 
+    //#"Bug"# (Förenklat koderna, då minute är falskt om ovan är sant...boolean)
     private int getTollFeePerPassing(LocalDateTime date) {
         if (isTollFreeDate(date)) return 0;
         int hour = date.getHour();
         int minute = date.getMinute();
-        if (hour == 6 && minute >= 0 && minute <= 29) return 8;
+        if (hour == 6 && minute <= 29) return 8;
         else if (hour == 6 && minute >= 30 && minute <= 59) return 13;
         else if (hour == 7 && minute >= 0 && minute <= 59) return 18;
         else if (hour == 8 && minute >= 0 && minute <= 29) return 13;
