@@ -17,14 +17,14 @@ public class TollFeeCalculator {
         try {
             Scanner sc = new Scanner(new File(inputFile));
             String[] dateStrings = sc.nextLine().split(", ");
-            //#Bug# (length ej -1)
+            //ToDo #Bug# (length ej -1)
             dates = new LocalDateTime[dateStrings.length];
             for(int i = 0; i < dates.length; i++) {
                 dates[i] = LocalDateTime.parse(dateStrings[i], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
             }
             System.out.println("The total fee for the inputfile is: " + getTotalFeeCost(dates));
         } catch(DateTimeParseException e) {
-            //#Bug# (catch , throw fångade inte upp)
+            //ToDo #Bug# (catch , throw fångade inte upp)
             System.err.println("Could not read file " + dates);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -37,12 +37,12 @@ public class TollFeeCalculator {
     private int getTotalFeeCost(LocalDateTime[] dates) {
         int totalFee = 0;
         LocalDateTime intervalStart = dates[0];
+        //ToDo #Bug# (Lagt till max 1 taxa per passering under 60min)
         int maxFeesUnder60min = 0;
         for(LocalDateTime date: dates) {
-            if(date == null) continue;          //ToDo (2)
             long diffInMinutes = intervalStart.until(date, ChronoUnit.MINUTES);
             int fee = 0;
-            if(diffInMinutes > 60) {
+            if(diffInMinutes >= 60) {
                 fee = getTollFeePerPassing(date) + maxFeesUnder60min;
                 maxFeesUnder60min = 0;
                 intervalStart = date;
@@ -51,13 +51,13 @@ public class TollFeeCalculator {
                 maxFeesUnder60min = Math.max(getTollFeePerPassing(date), maxFeesUnder60min);
             }
             totalFee += fee;
-            System.out.println(date.toString() +" \n" + "Fee: " + getTollFeePerPassing(date));
+            System.out.println(date.toString() +"\n" + "Fee: " + getTollFeePerPassing(date)+ "\n" + "---------" );
         }
-        //#Bug# (Math.min från Math.max.)
+        //ToDo #Bug# (Math.min från Math.max.)
         return Math.min(totalFee + maxFeesUnder60min, 60);
     }
 
-    //#"Bug"# (Förenklat koderna, då minute är falskt om ovan är sant...boolean)
+    //ToDo #"Bug"# (Förenklat koderna, då minute är falskt om ovan är sant...boolean + stod hour iso minu på en rad)
     private int getTollFeePerPassing(LocalDateTime date) {
         if (isTollFreeDate(date)) return 0;
         int hour = date.getHour();
@@ -82,3 +82,6 @@ public class TollFeeCalculator {
         new TollFeeCalculator("testData/Lab4.txt");
     }
 }
+
+
+// ToDo (1) = Få till en sc.close(); för att stänga scannern
